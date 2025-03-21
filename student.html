@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Portal - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background-color: #3a7bc8;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .status-summary {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .status-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .status-card.present {
+            background-color: #e8f5e9;
+            border-left: 4px solid #43a047;
+        }
+        
+        .status-card.absent {
+            background-color: #ffebee;
+            border-left: 4px solid #e53935;
+        }
+        
+        .status-card.late {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffb300;
+        }
+        
+        .status-card.total {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1e88e5;
+        }
+        
+        .status-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .status-label {
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .attendance-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .date-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        thead th {
+            background-color: #f9f9f9;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status-present {
+            background-color: #43a047;
+        }
+        
+        .status-absent {
+            background-color: #e53935;
+        }
+        
+        .status-late {
+            background-color: #ffb300;
+        }
+        
+        .attendance-chart {
+            height: 200px;
+            margin-top: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            padding-top: 20px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background-color: #4a90e2;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.3s;
+        }
+        
+        .chart-bar::before {
+            content: attr(data-value) '%';
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .chart-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .status-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .table-responsive {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-text">Attendance Portal</div>
+        <div class="user-info">
+            <div class="user-avatar">S</div>
+            <span>Student</span>
+            <button class="logout-btn" onclick="location.href='index.html'">Logout</button>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Attendance Dashboard</h1>
+            <p>Welcome back, Dear Student. Here's your attendance summary.</p>
+        </div>
+        
+        <div class="status-summary">
+            <div class="status-card present">
+                <div class="status-number">26</div>
+                <div class="status-label">Classes Attended</div>
+            </div>
+            <div class="status-card absent">
+                <div class="status-number">3</div>
+                <div class="status-label">Classes Missed</div>
+            </div>
+            <div class="status-card late">
+                <div class="status-number">2</div>
+                <div class="status-label">Late Arrivals</div>
+            </div>
+            <div class="status-card total">
+                <div class="status-number">86.7%</div>
+                <div class="status-label">Attendance Rate</div>
+            </div>
+        </div>
+        
+        <div class="attendance-card">
+            <div class="card-header">
+                <h2>Class Attendance</h2>
+                <div class="date-selector">
+                    <select id="month-selector">
+                        <option value="03">March 2025</option>
+                        <option value="02">February 2025</option>
+                        <option value="01">January 2025</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Course</th>
+                            <th>Time</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mar 21, 2025</td>
+                            <td>Computer Science 101</td>
+                            <td>09:00 - 10:30</td>
+                            <td><span class="status-indicator status-present"></span> Present</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 21, 2025</td>
+                            <td>Mathematics 202</td>
+                            <td>11:00 - 12:30</td>
+                            <td><span class="status-indicator status-present"></span> Present</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 20, 2025</td>
+                            <td>Physics 101</td>
+                            <td>14:00 - 15:30</td>
+                            <td><span class="status-indicator status-present"></span> Present</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 20, 2025</td>
+                            <td>English Literature</td>
+                            <td>16:00 - 17:30</td>
+                            <td><span class="status-indicator status-late"></span> Late</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 19, 2025</td>
+                            <td>Computer Science 101</td>
+                            <td>09:00 - 10:30</td>
+                            <td><span class="status-indicator status-absent"></span> Absent</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 19, 2025</td>
+                            <td>Mathematics 202</td>
+                            <td>11:00 - 12:30</td>
+                            <td><span class="status-indicator status-present"></span> Present</td>
+                        </tr>
+                        <tr>
+                            <td>Mar 18, 2025</td>
+                            <td>Physics 101</td>
+                            <td>14:00 - 15:30</td>
+                            <td><span class="status-indicator status-present"></span> Present</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="attendance-card">
+            <div class="card-header">
+                <h2>Monthly Attendance Rate</h2>
+            </div>
+            
+            <div class="attendance-chart">
+                <div class="chart-bar" style="height: 75%;" data-value="75">
+                    <span class="chart-label">Jan</span>
+                </div>
+                <div class="chart-bar" style="height: 85%;" data-value="85">
+                    <span class="chart-label">Feb</span>
+                </div>
+                <div class="chart-bar" style="height: 90%;" data-value="90">
+                    <span class="chart-label">Mar</span>
+                </div>
+                <div class="chart-bar" style="height: 95%;" data-value="95">
+                    <span class="chart-label">Apr</span>
+                </div>
+                <div class="chart-bar" style="height: 88%;" data-value="88">
+                    <span class="chart-label">May</span>
+                </div>
+                <div class="chart-bar" style="height: 93%;" data-value="93">
+                    <span class="chart-label">Jun</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Link the login and dashboard pages
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we have the query parameter that would be set by the login page
+            const urlParams = new URLSearchParams(window.location.search);
+            const loggedIn = urlParams.get('loggedIn');
+            
+            // If not logged in through proper channels, redirect to login page
+            // This is just for demo purposes - real authentication would be more secure
+            if (!loggedIn && window.location.pathname.includes('dashboard')) {
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Add month selector functionality
+        document.getElementById('month-selector').addEventListener('change', function() {
+            // In a real app, this would fetch new data from the server
+            alert('In a real application, this would load attendance data for the selected month.');
+        });
+    </script>
+</body>
+</html>
