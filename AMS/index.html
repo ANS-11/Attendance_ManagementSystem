@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Portal - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            background-color: #4a90e2;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 42px;
+            font-weight: bold;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4a90e2;
+            outline: none;
+        }
+        
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .user-type-btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .user-type-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 30%;
+            transition: background-color 0.3s;
+        }
+        
+        .user-type-btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+        
+        .help-text {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <div class="logo">AP</div>
+        </div>
+        <h1>Attendance Portal Login</h1>
+        
+        <!-- User Type Buttons -->
+        <div class="user-type-btn-container">
+            <button class="user-type-btn" id="student-btn">Student</button>
+            <button class="user-type-btn" id="faculty-btn">Faculty</button>
+            <button class="user-type-btn" id="admin-btn">Admin</button>
+        </div>
+        
+        <form id="loginForm" style="display: none;">
+            <div class="form-group">
+                <label for="username">Username or Email</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">Log In</button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#">Forgot password?</a>
+        </div>
+        
+        <p class="help-text">Need help? Contact your administrator</p>
+    </div>
+
+    <script>
+        // Add event listeners to the user type buttons
+        document.getElementById('student-btn').addEventListener('click', function() {
+            handleUserTypeSelection('student');
+        });
+        
+        document.getElementById('faculty-btn').addEventListener('click', function() {
+            handleUserTypeSelection('faculty');
+        });
+        
+        document.getElementById('admin-btn').addEventListener('click', function() {
+            handleUserTypeSelection('admin');
+        });
+
+        // Function to handle user type selection and show the login form
+        function handleUserTypeSelection(userType) {
+            // Store the selected user type (could be used in redirection or validation)
+            sessionStorage.setItem('userType', userType);
+
+            // Show the login form after selecting a user type
+            document.getElementById('loginForm').style.display = 'block';
+
+            // Optionally disable buttons once a type is selected
+            document.querySelectorAll('.user-type-btn').forEach(function(button) {
+                button.disabled = true;
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get the selected user type from session storage
+            const userType = sessionStorage.getItem('userType');
+            
+            // Redirect to the appropriate page based on user type
+            let redirectTo = '';
+            if (userType === 'student') {
+                redirectTo = 'student.html'; // Update with actual student page
+            } else if (userType === 'faculty') {
+                redirectTo = 'faculty.html'; // Update with actual faculty page
+            } else if (userType === 'admin') {
+                redirectTo = 'admin.html'; // Update with actual admin page
+            }
+            
+            // Redirect to the selected user page
+            window.location.href = redirectTo;
+        });
+    </script>
+</body>
+</html>
